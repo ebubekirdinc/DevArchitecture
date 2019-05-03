@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using ServiceStack.Redis;
 
-namespace Core.CrossCuttingConcerns.Caching.Microsoft
+namespace Core.CrossCuttingConcerns.Caching.Redis
 {
     public class RedisCacheManager : ICacheManager
     {
