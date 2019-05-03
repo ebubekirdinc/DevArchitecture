@@ -4,6 +4,7 @@ using Core.Aspects.Autofac.Caching;
 using Core.Aspects.Autofac.Performance;
 using Core.Aspects.Autofac.Transaction;
 using Core.Aspects.Autofac.Validation;
+using Core.Aspects.Autofac.Logging;
 using Core.BackgroundJobs;
 using Core.CrossCuttingConcerns.Caching.Microsoft;
 using Core.Utilities.Mail;
@@ -16,6 +17,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
+using Core.CrossCuttingConcerns.Logging.Log4Net;
+using Core.CrossCuttingConcerns.Logging.Log4Net.Loggers;
+
 
 namespace Business.Concrete
 {
@@ -51,6 +55,7 @@ namespace Business.Concrete
         
 
         [ValidationInterceptionAspect(typeof(ProductValidation))]
+        [LoggingInterceptionAspect(typeof(FileLogger))]
         public void Add(Product product)
         {
             _productDal.Add(product);
