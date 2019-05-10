@@ -55,7 +55,7 @@ namespace Business.Concrete
         
 
         [ValidationInterceptionAspect(typeof(ProductValidation))]
-        [LoggingInterceptionAspect(typeof(FileLogger))]
+        [LoggingInterceptionAspect(typeof(FileLogger),true)]
         public void Add(Product product)
         {
             _productDal.Add(product);

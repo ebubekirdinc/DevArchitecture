@@ -13,14 +13,31 @@ namespace Core.Aspects.Autofac.Logging
     public class LoggingInterceptionAspect : MethodInterception
     {
         private LoggerService _loggerService;
-        public LoggingInterceptionAspect(Type loggerType)
+        private bool _logOnAfter;
+        public LoggingInterceptionAspect(Type loggerType, bool logOnAfter)
         {
             if (loggerType.BaseType != typeof(LoggerService))
                 throw new Exception("Wrong Logger Type");
 
             _loggerService = (LoggerService)Activator.CreateInstance(loggerType);
+            _logOnAfter = logOnAfter;
         }
         protected override void OnBefore(IInvocation invocation)
+        {
+        
+
+            _loggerService.Error(GetLogDetail(invocation,"OnBefore"));
+        }
+
+        protected override void OnAfter(IInvocation invocation)
+        {
+            if (!_logOnAfter) return;
+
+            _loggerService.Error(GetLogDetail(invocation, "OnAfter"));
+            
+        }
+
+        LogDetail GetLogDetail (IInvocation invocation, string actionLog)
         {
             var logParameters = invocation.Arguments.Select(x => new LogParameter
             {
@@ -30,12 +47,12 @@ namespace Core.Aspects.Autofac.Logging
 
             var logDetail = new LogDetail()
             {
-                FullName = invocation.TargetType.Name,
+                ActionLog = actionLog,
                 MethodName = invocation.Method.Name,
                 Parameters = logParameters
             };
 
-            _loggerService.Error(logDetail);
+            return logDetail;
         }
     }
 }
