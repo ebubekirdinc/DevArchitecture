@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Core.Utilities.IoC;
+using Microsoft.Extensions.Configuration;
 using ServiceStack.Redis;
 
 namespace Core.CrossCuttingConcerns.Caching.Redis
@@ -11,6 +13,11 @@ namespace Core.CrossCuttingConcerns.Caching.Redis
 
         private void RedisInvoker(Action<RedisClient> redisAction)
         {
+            if (_redisEndpoint == null)
+            {
+                throw  new NullReferenceException();
+            }
+
             using (var client = new RedisClient(_redisEndpoint))
             {
                 redisAction.Invoke(client);
@@ -19,7 +26,16 @@ namespace Core.CrossCuttingConcerns.Caching.Redis
 
         public RedisCacheManager()
         {
-            _redisEndpoint = new RedisEndpoint("localhost", 6379);
+            var configuration = (IConfiguration)ServiceTool.ServiceProvider.GetService(typeof(IConfiguration));
+
+            var redisConnectionInfo = configuration.GetValue<string>("RedisHostInformation").Split(':');
+
+            if (redisConnectionInfo.Length != 2 || int.TryParse(redisConnectionInfo[1], out var port) == false || port == 0)
+            {
+                throw new NullReferenceException();
+            }
+
+            _redisEndpoint = new RedisEndpoint(redisConnectionInfo[0], port);
         }
 
         public T Get<T>(string key)
