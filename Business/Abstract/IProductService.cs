@@ -14,6 +14,6 @@ namespace Business.Abstract
         void Update(Product product);
         void DeleteById(int id);
         void Delete(Product product);
-
+        void TransactionalOperation(Product product1, Product product2);
     }
 }
